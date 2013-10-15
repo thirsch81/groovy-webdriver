@@ -1,0 +1,15 @@
+apply plugin: "java"
+apply plugin: "eclipse"
+apply plugin: "groovy"
+apply plugin: "wrapper"
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	compile "org.codehaus.groovy:groovy-all:2.1.7"
+	compile "org.seleniumhq.selenium:selenium-java:2.35.0"
+	compile "org.seleniumhq.selenium:selenium-support:2.35.0"
+	testCompile "junit:junit:4.11"
+}
