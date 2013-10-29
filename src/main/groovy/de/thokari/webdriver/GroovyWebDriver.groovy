@@ -1,28 +1,31 @@
 package de.thokari.webdriver
 
-import java.lang.reflect.Constructor
 import java.util.concurrent.TimeUnit
 
 import org.openqa.selenium.By
 import org.openqa.selenium.JavascriptExecutor
-import org.openqa.selenium.TimeoutException
 import org.openqa.selenium.WebDriver
 import org.openqa.selenium.WebElement
-import org.openqa.selenium.support.ui.ExpectedCondition
-import org.openqa.selenium.support.ui.ExpectedConditions
-import org.openqa.selenium.support.ui.WebDriverWait
 
-import de.thokari.webdriver.page.GroovyWebDriverPage
-import de.thokari.webdriver.page.WrongPageException
+import de.thokari.webdriver.page.PageHandler
+import de.thokari.webdriver.wait.ImprovedWait
 
 public class GroovyWebDriver {
 
 	@Delegate
 	WebDriver driver
 
-	ExpectedConditions condition = new ExpectedConditions()
+	@Delegate
+	private ImprovedWait improvedWait = new ImprovedWait(this)
 
-	Long implicitWaitMilliseconds
+	@Delegate
+	private PageHandler pageHandler = new PageHandler(this)
+
+	private Long implicitWaitMilliseconds
+
+	public GroovyWebDriver(WebDriver driver) {
+		this.driver = driver
+	}
 
 	public void setImplicitWait(Long milliseconds) {
 		implicitWaitMilliseconds = milliseconds
@@ -66,27 +69,6 @@ public class GroovyWebDriver {
 		}
 	}
 
-	public Boolean waitFor(Long seconds = 10, String message, Closure condition) {
-		def wait = new WebDriverWait(driver, seconds)
-		condition.delegate = this
-		try {
-			wait.until(new ExpectedCondition<Boolean>() {
-						public Boolean apply(WebDriver driver) {
-							condition.call() as Boolean
-						}
-					})
-		} catch(Exception e) {
-			def newException = new TimeoutException("Timed out after $seconds seconds waiting for $message")
-			throw newException
-		}
-	}
-
-	public def waitFor(Long seconds = 10, Closure condition) {
-		condition.delegate = this.condition
-		def wait = new WebDriverWait(driver, seconds)
-		wait.until condition.call()
-	}
-
 	public void sleep(milliseconds) {
 		Thread.sleep milliseconds as Long
 	}
@@ -110,56 +92,5 @@ public class GroovyWebDriver {
 
 	public String text(locator) {
 		findElement(locator).getText()
-	}
-
-	Boolean on(Class<? extends GroovyWebDriverPage> pageClass, Closure actions = null) {
-		GroovyWebDriverPage page = createPage(pageClass)
-		Boolean onPage = page.isCurrentPage()
-		if(actions) {
-			actions.delegate = page
-			actions.call()
-		}
-		onPage
-	}
-
-	Boolean notOn(Class<? extends GroovyWebDriverPage> pageClass, Closure actions = null) {
-		GroovyWebDriverPage page = createPage(pageClass)
-		Boolean notOnPage = !page.isCurrentPage()
-		if(actions && notOnPage) {
-			actions.delegate = page
-			actions.call()
-		}
-		notOnPage
-	}
-
-	void onValidate(Class<? extends GroovyWebDriverPage> pageClass, Closure actions = null) {
-		GroovyWebDriverPage page = createPage(pageClass)
-		if(page.isCurrentPage()) {
-			page.validate()
-			if(actions) {
-				actions.delegate = page
-				actions.call()
-			}
-		} else {
-			throw new WrongPageException("Not on ${pageClass.simpleName}")
-		}
-	}
-
-	def condition(Closure expectation) {
-		expectation.delegate = condition
-		expectation.call().apply(driver)
-	}
-
-	def expect(Closure expectation) {
-		expectation.delegate = condition
-		ExpectedCondition expectedCondition = expectation.call()
-		if(!(expectedCondition.apply(driver) as Boolean)) {
-			throw new ExpectationFailedException("Expecting $expectedCondition")
-		}
-	}
-
-	private GroovyWebDriverPage createPage(Class<? extends GroovyWebDriverPage> pageClass) {
-		Constructor constructor = pageClass.getConstructor(GroovyWebDriver)
-		constructor.newInstance(this)
 	}
 }

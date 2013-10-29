@@ -1,15 +1,16 @@
-package de.thokari.webdriver.test;
+package de.thokari.webdriver.test
+
+import static org.junit.Assert.*
 
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import org.openqa.selenium.htmlunit.HtmlUnitDriver
+import org.openqa.selenium.WebElement
+import org.openqa.selenium.firefox.FirefoxDriver
 
 import de.thokari.webdriver.GroovyWebDriver
-import de.thokari.webdriver.page.example.DuckDuckGoHomePage
-import de.thokari.webdriver.page.example.DuckDuckGoResultsPage;
-
-import static org.junit.Assert.*
+import de.thokari.webdriver.test.page.DuckDuckGoHomePage
+import de.thokari.webdriver.test.page.DuckDuckGoResultsPage
 
 public class GroovyWebDriverTest {
 
@@ -18,7 +19,7 @@ public class GroovyWebDriverTest {
 
 	@Before
 	public void setUp() {
-		driver = new GroovyWebDriver(driver: new HtmlUnitDriver(true))
+		driver = new GroovyWebDriver(new FirefoxDriver())
 	}
 
 	@After
@@ -33,9 +34,18 @@ public class GroovyWebDriverTest {
 
 		waitFor 2, { titleContains "DuckDuckGo" }
 
+		waitFor 2, "title to contain DuckDuckGo", { title.contains "DuckDuckGo" }
+
+		waitFor 2, "search button to be enabled", {
+			findElement("#search_button_homepage").isEnabled()
+		}
+
 		"Wikipedia".each { letter -> type "#search_form_input_homepage", letter }
 
-		waitFor { elementToBeClickable css("#search_button_homepage") }.click()
+		waitFor {
+			textToBePresentInElementValue css("#search_form_input_homepage"), "Wikipedia"
+			elementToBeClickable css("#search_button_homepage")
+		}.click()
 
 		waitFor 2, {
 			textToBePresentInElement css("#zero_click_heading"), "Wikipedia"
@@ -47,22 +57,30 @@ public class GroovyWebDriverTest {
 
 		open "https://duckduckgo.com"
 
-		expect {
-			titleIs "Search DuckDuckGos"
-		}
-		
+		assertTrue expect { titleIs "Search DuckDuckGo" }
+		assertTrue expect { presenceOfElementLocated css("#search_button_homepage") } instanceof WebElement
+
 		onValidate DuckDuckGoHomePage, {
-			
+
 			enterSearch "Wikipedia"
-			clickSearch()
+			clickSearchButton()
 		}
-		
+
 		assertTrue notOn(DuckDuckGoHomePage)
-		
-		onValidate DuckDuckGoResultsPage, {
-			
-		}
-	
-		
+
+		onValidate DuckDuckGoResultsPage
+
+
+		//		, {
+		//
+		//			DuckDuckGoResultListItem { list ->
+		//				list.each {
+		//					println it.linkText
+		//				}
+		//			}
+		//println get(DuckDuckGoResultListItem)[0].linkText
+
+		//println it.components.DuckDuckGoResultListItem[1].linkText
+		//}
 	}
 }

@@ -1,7 +1,8 @@
-package de.thokari.webdriver.page.example
+package de.thokari.webdriver.test.page
 
 import groovy.transform.InheritConstructors
 import de.thokari.webdriver.page.GroovyWebDriverPage
+import de.thokari.webdriver.test.component.DuckDuckGoResultListItem
 
 @InheritConstructors
 class DuckDuckGoResultsPage extends GroovyWebDriverPage {
@@ -14,6 +15,11 @@ class DuckDuckGoResultsPage extends GroovyWebDriverPage {
 	@Override
 	public Boolean isCurrentPage() {
 		isElementPresent "#header_logo"
+	}
+
+	@Override
+	public void addComponents() {
+		multiple DuckDuckGoResultListItem, "div[class^='results']"
 	}
 
 	public String getZeroClickLinkText() {
