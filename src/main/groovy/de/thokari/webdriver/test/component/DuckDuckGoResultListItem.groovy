@@ -1,11 +1,7 @@
 package de.thokari.webdriver.test.component
 
-import java.awt.TexturePaintContext.Byte;
-
-import de.thokari.webdriver.page.GroovyWebDriverPageComponent
 import groovy.transform.InheritConstructors
-
-import org.openqa.selenium.By
+import de.thokari.webdriver.page.GroovyWebDriverPageComponent
 
 @InheritConstructors
 class DuckDuckGoResultListItem extends GroovyWebDriverPageComponent {
@@ -19,7 +15,6 @@ class DuckDuckGoResultListItem extends GroovyWebDriverPageComponent {
 	}
 
 	public String getLinkText() {
-		By locator = By.tagName("a")
-		findElement(locator).text
+		text "h2 a"
 	}
 }

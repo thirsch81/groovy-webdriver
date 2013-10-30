@@ -10,7 +10,7 @@ class DuckDuckGoHomePage extends GroovyWebDriverPage {
 
 	@Override
 	public Boolean isCurrentPage() {
-		title.equals("Search DuckDuckGo")
+		title.equals "Search DuckDuckGo"
 	}
 
 	@Override
@@ -23,11 +23,11 @@ class DuckDuckGoHomePage extends GroovyWebDriverPage {
 	public void addComponents() {
 		// TODO Auto-generated method stub
 	}
-	
+
 	void enterSearch(String text) {
 		type "#search_form_input_homepage", text
 	}
-	
+
 	void clickSearchButton() {
 		click "#search_button_homepage"
 	}

@@ -1,5 +1,6 @@
 package de.thokari.webdriver
 
+import java.util.List;
 import java.util.concurrent.TimeUnit
 
 import org.openqa.selenium.By
@@ -14,6 +15,9 @@ public class GroovyWebDriver {
 
 	@Delegate
 	WebDriver driver
+	
+	@Delegate
+	private ImprovedSearchContext improvedSearchContext = new ImprovedSearchContext(this)
 
 	@Delegate
 	private ImprovedWait improvedWait = new ImprovedWait(this)
@@ -25,6 +29,10 @@ public class GroovyWebDriver {
 
 	public GroovyWebDriver(WebDriver driver) {
 		this.driver = driver
+	}
+
+	def methodMissing(String name, args) {
+		driver.invokeMethod(name, args)
 	}
 
 	public void setImplicitWait(Long milliseconds) {
@@ -41,32 +49,8 @@ public class GroovyWebDriver {
 		driver.get url
 	}
 
-	public By css(String selector) {
-		By.cssSelector selector
-	}
-
-	public WebElement findElement(String selector) {
-		findElement css(selector)
-	}
-
-	public List<WebElement> findElements(String selector) {
-		findElements css(selector)
-	}
-
-	public Boolean isElementPresent(locator) {
-		findElements(locator) as Boolean
-	}
-
-	public Boolean isElementAbsent(locator) {
-		!isElementPresent(locator)
-	}
-
-	public Boolean isElementVisible(locator) {
-		if(isElementPresent(locator)) {
-			return findElement(locator).displayed
-		} else {
-			return false
-		}
+	public def execJS(String command) {
+		((JavascriptExecutor) driver).executeScript command
 	}
 
 	public void sleep(milliseconds) {
@@ -76,21 +60,5 @@ public class GroovyWebDriver {
 	public void sleep(from, to) {
 		def time = from + new Random().nextInt(to)
 		Thread.sleep time as Long
-	}
-
-	public def execJS(String command) {
-		((JavascriptExecutor) driver).executeScript command
-	}
-
-	public void click(locator) {
-		findElement(locator).click()
-	}
-
-	public void type(locator, String text) {
-		findElement(locator).sendKeys(text)
-	}
-
-	public String text(locator) {
-		findElement(locator).getText()
 	}
 }

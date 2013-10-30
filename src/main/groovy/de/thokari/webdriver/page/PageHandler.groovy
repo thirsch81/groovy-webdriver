@@ -3,6 +3,8 @@ package de.thokari.webdriver.page
 import java.lang.reflect.Constructor
 
 import de.thokari.webdriver.GroovyWebDriver
+import de.thokari.webdriver.ImprovedSearchContext;
+import de.thokari.webdriver.wait.ImprovedWait;
 
 class PageHandler {
 
@@ -47,7 +49,7 @@ class PageHandler {
 
 	private GroovyWebDriverPage createPage(Class<? extends GroovyWebDriverPage> pageClass) {
 		Constructor constructor = pageClass.getConstructor(GroovyWebDriver)
-		GroovyWebDriverPage page = constructor.newInstance(driver)
+		GroovyWebDriverPage page = constructor.newInstance driver
 		page.addComponents()
 		page
 	}

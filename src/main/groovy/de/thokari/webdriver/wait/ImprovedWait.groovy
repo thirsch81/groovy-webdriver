@@ -15,7 +15,7 @@ class ImprovedWait {
 
 	/**
 	 * Generic wait method. Needs a string describing what is expected,<br/>
-	 * e.g. "title to contain some text"<br/>
+	 * e.g. "title to contain some text".<br/>
 	 * Only single statements (i.e. the last one in the closure) are evaluated.
 	 * 
 	 * @param seconds (optional) max timeout, defaults to 10
@@ -28,7 +28,7 @@ class ImprovedWait {
 	}
 
 	/**
-	 * Uses standard Selenium ExpectedConditions.<br/>
+	 * Wait using standard Selenium ExpectedConditions.<br/>
 	 * You can provide multiple statements, which will be evaluated in order.
 	 * 
 	 * @param seconds (optional) max timeout, defaults to 10

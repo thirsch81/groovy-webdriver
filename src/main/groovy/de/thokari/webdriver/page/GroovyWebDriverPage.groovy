@@ -1,13 +1,22 @@
 package de.thokari.webdriver.page
 
+import org.openqa.selenium.By
 import org.openqa.selenium.WebElement
 
 import de.thokari.webdriver.GroovyWebDriver
+import de.thokari.webdriver.GroovyWebElement
 
 abstract class GroovyWebDriverPage {
 
-	@Delegate(interfaces = false)
-	GroovyWebDriver driver
+	@Delegate
+	private GroovyWebDriver driver
+
+	public List<WebElement> findElements(By locator) {
+		driver.improvedSearchContext.findElements(locator)
+	}
+	public Set<String> getWindowHandles() {
+		driver.windowHandles
+	}
 
 	Map<String, Object> components = [:]
 
@@ -19,20 +28,20 @@ abstract class GroovyWebDriverPage {
 
 	abstract Boolean isCurrentPage()
 
-	abstract void  addComponents()
+	abstract void addComponents()
 
 	protected void single(Class<? extends GroovyWebDriverPageComponent> clazz) {
-		components.put clazz.simpleName, clazz.getConstructor(WebElement).newInstance(element)
+		components.put clazz.simpleName, clazz.getConstructor(GroovyWebDriver, WebElement).newInstance(driver, element)
 	}
 
 	protected void multiple(Class<? extends GroovyWebDriverPageComponent> clazz, commonSelector) {
-		List<WebElement> elements = driver.findElements(commonSelector)
-		//		elements.each {
-		//			println it.getAttribute("class")
-		//		}
+		List<WebElement> elements = findElements(commonSelector)
 		List<GroovyWebDriverPageComponent> multipleComponents = []
-		elements.each { WebElement element ->
-			multipleComponents.add clazz.getConstructor(WebElement).newInstance(element)
+		elements.each { element ->
+			def constructor = clazz.getConstructor(GroovyWebDriver, GroovyWebElement)
+			// weird this is no GroovyWebDriver...
+			assert !(driver instanceof GroovyWebDriver)
+			multipleComponents.add constructor.newInstance(new GroovyWebDriver(driver), element)
 		}
 		components.put clazz.simpleName, multipleComponents
 	}

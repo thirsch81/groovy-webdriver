@@ -68,19 +68,8 @@ public class GroovyWebDriverTest {
 
 		assertTrue notOn(DuckDuckGoHomePage)
 
-		onValidate DuckDuckGoResultsPage
-
-
-		//		, {
-		//
-		//			DuckDuckGoResultListItem { list ->
-		//				list.each {
-		//					println it.linkText
-		//				}
-		//			}
-		//println get(DuckDuckGoResultListItem)[0].linkText
-
-		//println it.components.DuckDuckGoResultListItem[1].linkText
-		//}
+		onValidate DuckDuckGoResultsPage, {
+			components["DuckDuckGoResultListItem"].each { println it.linkText }
+		}
 	}
 }

@@ -1,6 +1,9 @@
 package de.thokari.webdriver.test.page
 
 import groovy.transform.InheritConstructors
+
+import org.openqa.selenium.By
+
 import de.thokari.webdriver.page.GroovyWebDriverPage
 import de.thokari.webdriver.test.component.DuckDuckGoResultListItem
 
@@ -19,7 +22,7 @@ class DuckDuckGoResultsPage extends GroovyWebDriverPage {
 
 	@Override
 	public void addComponents() {
-		multiple DuckDuckGoResultListItem, "div[class^='results']"
+		multiple DuckDuckGoResultListItem, By.xpath("//div[@id='links']/div[starts-with(@id,'r1')]")
 	}
 
 	public String getZeroClickLinkText() {
